@@ -16,11 +16,15 @@ function data = breaktheplot(mydata)
 
 % Data Science 
   halfcycle_unique = unique(mydata(:,2)); %find all the unique possible values of the halfcycle index
-  halfcycle_unique(1,1) = 1; % matlab does not like zeros so make the first 0 a 1
+%   halfcycle_unique(1,1) = 1; % matlab does not like zeros so make the first 0 a 1
   
-  voltage = mydata(:,1);
-  discharge = mydata(:,3);
-  charge = mydata(:,4);
+  voltage = mydata(:,1); % (V)
+  discharge = mydata(:,3); % (mAh/h)
+  charge = mydata(:,4); % (mAh/g)
+  
+  total_time = mydata(:,5); %(s)
+  current_density = mydata(:,6); % (mA/g)
+  dq = mydata(:,7); % (mAh)
   
   for i = 1:length(halfcycle_unique)
       
@@ -33,9 +37,9 @@ function data = breaktheplot(mydata)
       index = find(mydata(:,2) == k);
       
       if mod(i,2) == 0 
-        data{i} = [voltage(index),charge(index)];
+        data{i} = [voltage(index),charge(index),current_density(index)];
       else
-        data{i} = [voltage(index),discharge(index)];
+        data{i} = [voltage(index),discharge(index),current_density(index)];
       end
 
   end

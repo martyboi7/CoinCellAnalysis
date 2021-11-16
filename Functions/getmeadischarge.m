@@ -5,7 +5,11 @@
 % Version:  A1
 % Status:   Working
 
-% Note:     
+% Note:    
+%           If you pass getmedischarge(data,cycles,colours) plots the
+%           individual cycles (polarization). If you specifiy also the
+%           plot_mode getmedischarge(data,cycles == 1,colours,plot_mode) it will
+%           only export the capacity fade data
 
 function discharge_capacity = getmeadischarge(data,cycles,data_colors,plot_mode)
 
@@ -14,9 +18,9 @@ function discharge_capacity = getmeadischarge(data,cycles,data_colors,plot_mode)
 % the data set because data is discharge - charge)
 if nargin < 2
     cycles = length(data)/2;
-    plot_mode = 2; %this means nothing here - just has to be more than 1
+    plot_mode = 2; %this means nothing here - just not equal 1 (see pt. 3)
 elseif nargin < 4
-    plot_mode = 3; %this means nothing here - just has to be more than 1
+    plot_mode = 3; %this means nothing here - just not equal 1 (see pt. 3)
 end
 
 % 2. If you did specify cycles, but told it to print too many, it corrects
@@ -26,9 +30,9 @@ if (2*max(cycles) > length(data) && 2*min(cycles) ~= 2)
     cycles = round(length(data)/2) - 1;
 end
 
-% 3. FOR FORMATION CHARGE COMPARISON ONLY
-% plot_mode == 1 and only one cycle is specified 
-if(plot_mode == 1 && length(cycles) == 1)
+% 3. FOR FORMATION CHARGE COMPARISON ONLY - plot mode 6
+% plot_mode == 6 and only one cycle is specified 
+if(plot_mode == 6 && length(cycles) == 1)
     
     oddcolumns = 1:2:length(data);
     odddata = data(1,oddcolumns); %get all the discharge datasets
@@ -50,10 +54,11 @@ if(plot_mode == 1 && length(cycles) == 1)
             discharge_capacity(cycles,:) = [cycles,final_actual_value(end)];
         else
            disp('Empty cycle')
-           discharge_capacity(k,:) = NaN;
-        end 
+           discharge_capacity(1,:) = NaN;
+        end
+        
 % -------------------------------------------------------------------------
-% 4. If number of cycles e.g [5]
+% 4. If number of cycles e.g [5] - applies to Rate Data and CC too
 elseif(length(cycles) == 1)
     for i = 1:2:2*cycles
    
@@ -119,7 +124,7 @@ elseif(length(cycles) > 1)
 
             discharge_capacity(i,:) = [i,final_actual_value(end)];
         else
-            disp('Empty cycle')
+           disp('Empty cycle')
            discharge_capacity(k,:) = NaN;
         end
     end
