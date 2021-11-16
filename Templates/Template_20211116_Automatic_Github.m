@@ -45,7 +45,7 @@ addpath ../Functions
 % Control Panel
 %--------------------------------------------------------------------------
 % KEY ANALYSIS PARAMETERS:
-plot_mode = 13; % see above what the different plot modes do ^
+plot_mode = 5; % see above what the different plot modes do ^
 mass_active = [0.001846257,0.00134249]; %active mass of sample (g) - MAKE SURE there is equal number of active masses as filepaths 
 my_selection = [1,2]; % pick which filepaths to plot
 % cycles = [1,2,5,10,50]; %the number of cycles to plot. first cycles [2], specific numbers [1,2,4,5], sequence [1:5]
