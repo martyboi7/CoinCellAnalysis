@@ -46,7 +46,7 @@ Please cite if used.
 
 Note: Make sure that your folders are structured as follows.
 
-BioLogic_Analysis (parent folder):
+CoinCellAnalysis (parent folder):
   1. Samples (subfolder)
   2. Templates (subfolder)
   3. Functions (subfolder)

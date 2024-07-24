@@ -1,0 +1,79 @@
+%--------------------------------------------------------------------------
+%--------------------------------------------------------------------------
+% VOLTAGE PPROFILE- E(V) vs Cap (mAh/g). Either DISCHARGE or CHARGE. 
+% DEGRADATION - Cap (mAh/g) vs Cycle Number. DISCHARGE normally. 
+%--------------------------------------------------------------------------
+% Plot Mode Options: 
+%--------------------------------------------------------------------------
+% SINGLECell 
+%----------------------------------------
+% VOLTAGE PPROFILE + DEGRADATION - SINGLECell 
+% 1 - SINGLECell: VOLTAGE PPROFILE + DEGRADATION. DISCHARGE. Select cycles.
+% 33. - SINGLECell: VOLTAGE PPROFILE. DISCHARGE. Select cycles.
+% 2 - SINGLECell: VOLTAGE PPROFILE + DEGRADATION. CHARGE. Select cycles.
+% 34. - SINGLECell: VOLTAGE PPROFILE. CHARGE. Select cycles.
+% 3 - SINGLECell: VOLTAGE PPROFILE. DISCHARGE. All cycles.
+% 4 - SINGLECell: VOLTAGE PPROFILE. CHARGE. All cycles.
+% 5 - SINGLECell: VOLTAGE PPROFILE + DEGRADATION. Mixed DISCHARGE + CHARGE (cross graph). Select cycles.
+% 35. - SINGLECell: VOLTAGE PPROFILE. Mixed DISCHARGE + CHARGE (cross graph). Select cycles.
+
+% VOLTAGE PPROFILE (TIME) - SINGLECell
+% 50 - SINGLECell: VOLTAGE PPROFILEDISCHARGE. Select cycles.
+% 51 - SINGLECell: VOLTAGE PPROFILED/C. Select cycles
+% 52 - SINGLECell: VOLTAGE PPROFILE. D. Select cycles
+% 53 - SINGLECell: Current. D/C. Select cycles
+% 54 - SINGLECell: Current/Capacity. D/C. Select cycles
+% 55 - SINGLECell: Capacity/Time. D/C. Select cycles
+
+% dQdV - SINGLECell
+% 13. SINGLECell: dQ/dV. Select cycles. Data as calc. by Biologic Software (needs expanded output file)
+% 14. SINGLECell: dQ/dV. Select cycles. Data calc. by Matlab (require normal .mpt). Line plot.
+% 15. SINGLECell: dQ/dV. Select cycles. Data calc. by Matlab (require normal .mpt). Scatter plot.
+
+% CV - SINGLECell
+% 17 - SINGLECell: CV taken out of CV-CC stack. Select cycles.
+% 24. - SINGLECell: CV taken out of CV-CC stack. Select cycles. DUPLICATE of 17!
+% 43 - SINGLECell: CV + DEGRADATION Discharge (integration for CV + CC normal). CV taken out of CV-CC stack. Select cycles. 
+% 44. - SINGLECell: CV + Degradation Discharge/Charge (integration for CV + CC normal). CV taken out of CV-CC stack. Select cycles. 
+%--------------------------------------------------------------------------
+% MULTICell
+%--------------------------------------------------------------------------
+% POLARIZATION (Used for Exsitu as well) - MULTICell
+% 6 - MULTICell: VOLTAGE PPROFILE Comparison - single DISCHARGE. Select CYCLE.
+% 7 - MULTICell: VOLTAGE PPROFILE Comparison - single CHARGE. Select CYCLE.
+% 16 - MULTICell: VOLTAGE PPROFILE. E(t) vs t. All Cycles. Appended Voltage
+% 18 - MULTICell: VOLTAGE PPROFILE. E(t) vs t. Select CYCLE. Appended Voltage
+% 19 - MULTICell: VOLTAGE PPROFILE. Mixed Discharge + Charge (Extended capacity). All Cycles.
+% 20 - MULTICell: VOLTAGE PPROFILE. Mixed Discharge + Charge (Extended capacity). Select CYCLE.
+
+% dQdV - MULTICell
+% 23. MULTICell: dQ/dV. Select CYCLE. Data calc. by Matlab (require normal .mpt). Line plot.
+
+% CV - MULTICell
+% 26 - MULTICell: CV. Select Cycle.
+%--------------------------------------------------------------------------
+% DEGRADATION 
+%--------------------------------------------------------------------------
+% DEGRADATION (END) - MULTICell
+% 8. MULTICell: DEGRADATION. DISCHARGE (CC). Select END CYCLE. 
+% 9. MULTICell: DEGRADATION. DISCHARGE (CC). Select END CYCLE. Tiled plot with current densities 
+% 10. MULTICell: DEGRADATION. CHARGE (CC). Select END CYCLE. 
+% 11. MULTICell: DEGRADATION. DISCHARGE + CHARGE (CC). Select END CYCLE. 
+% 27 MULTICell: Ci/Di DEGRADATION ratio. Select END CYCLE.
+% 28 MULTICell: Di/Ci DEGRADATION ratio. Select END CYCLE.
+% 29 MULTICell: Di/D(1) DEGRADATION ratio. Select END CYCLE.
+% 30 MULTICell: Ci/C(1) DEGRADATION ratio. Select END CYCLE.
+% 31 MULTICell: Di/Dmax DEGRADATION ratio. Select END CYCLE.
+% 32 MULTICell: Ci/Cmax DEGRADATION ratio. Select END CYCLE.
+% 46 MULTICELL: mAh/cm2 DEGRADATION. Select END CYCLE.
+% 47 MULTICELL: mAh/mm2 DEGRADATION. Select END CYCLE.
+
+% DEGRADATION (RANGE) - MULTICell
+% 36. MULTICell: DEGRADATION. DISCHARGE (CC). Select CYCLE RANGE. [100:300]
+% 37. MULTICell: DEGRADATION. DISCHARGE (CC). Select CYCLE RANGE. Tiled Plot, separates on second entry [1,100,500]
+% 57. - MULTICell: mAh/mm2 DEGRADATION. Select CYCLE RANGE. Tiled Plot, separates on second entry [1,100,500]
+
+% TIME (Fade) - MULTICell
+% 48 MULTICell - Time per cycle capacity fade (discharge/charge). Select CYCLE [1,5,10].
+% 49 MULTICell - Cummulative Time per cycle capacity fade (whole CYCLE). Select CYCLE [1,5,10].
+%--------------------------------------------------------------------------
