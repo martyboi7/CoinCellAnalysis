@@ -10,7 +10,7 @@
 %--------------------------------------------------------------------------
 % Input Handling
 %--------------------------------------------------------------------------
-function [polarization,capacity_fade,eis_profile,additional_figure,cell_data,my_selection_previous_assign]=trigger_coinCellAnalysis(plot_mode,pc_choice,data_choice,my_selection,my_selection_previous,cycles,CV_edge_limit,my_title,Tian2019_input,legend_location,auto_numbering_string,dQdV_conditions,print_loop_singleCELLS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high)
+function [polarization,capacity_fade,eis_profile,additional_figure,cell_data]=trigger_coinCellAnalysis(plot_mode,pc_choice,data_choice,my_selection,cycles,CV_edge_limit,my_title,legend_location,auto_numbering_string,dQdV_conditions,print_loop_singleCELLS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high)
 
 disp('-------------------------')
 disp('trigger_coinCellAnalysis')
@@ -18,11 +18,9 @@ disp('-------------------------')
 
 % Insert FIXED Values for Input Handling
 my_selection_fixed = [];
-my_selection_previous_fixed = [];
 cycles_fixed = [];
 CV_edge_limit_fixed = 0;
 my_title_fixed = "My Cells ";
-Tian2019_input_fixed = Tian_regression_parameters(my_title); %taken from CC Template
 legend_location_fixed = 'Northeast';
 auto_numbering_string_fixed = 'Cycle ';
 dQdV_conditions_fixed = {2e3,10}; %taken from CC Template
@@ -40,7 +38,6 @@ switch nargin
         
     case 3  % Key components selected: plot_mode, pc_choice, data_choice
             my_selection = my_selection_fixed;
-            my_selection_previous = my_selection_previous_fixed;
             cycles = cycles_fixed;
             CV_edge_limit = CV_edge_limit_fixed;
             my_title = my_title_fixed;
@@ -52,8 +49,7 @@ switch nargin
             mygraph_linewidth = mygraph_linewidth_fixed;
             mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 4  % my_selection            
-            my_selection_previous = my_selection_previous_fixed;
+    case 4  % cycles            
             cycles = cycles_fixed;
             CV_edge_limit = CV_edge_limit_fixed;
             my_title = my_title_fixed;
@@ -65,8 +61,7 @@ switch nargin
             mygraph_linewidth = mygraph_linewidth_fixed;
             mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 5  % my_selection_previous
-            cycles = cycles_fixed;
+    case 5  % CV_edge_limit           
             CV_edge_limit = CV_edge_limit_fixed;
             my_title = my_title_fixed;
             Tian2019_input = Tian2019_input_fixed;
@@ -77,8 +72,7 @@ switch nargin
             mygraph_linewidth = mygraph_linewidth_fixed;
             mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 6  % cycles
-            CV_edge_limit = CV_edge_limit_fixed;
+    case 6  % my_title
             my_title = my_title_fixed;
             Tian2019_input = Tian2019_input_fixed;
             legend_location = legend_location_fixed;
@@ -88,84 +82,46 @@ switch nargin
             mygraph_linewidth = mygraph_linewidth_fixed;
             mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 7  % CV_edge_limit
-            my_title = my_title_fixed;
-            Tian2019_input = Tian2019_input_fixed;
-            legend_location = legend_location_fixed;
-            auto_numbering_string = auto_numbering_string_fixed;
-            dQdV_conditions = dQdV_conditions_fixed;
-            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
-            mygraph_linewidth = mygraph_linewidth_fixed;
-            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
-            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 8  % my_title
-            Tian2019_input = Tian2019_input_fixed;
-            legend_location = legend_location_fixed;
-            auto_numbering_string = auto_numbering_string_fixed;
-            dQdV_conditions = dQdV_conditions_fixed;
-            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
-            mygraph_linewidth = mygraph_linewidth_fixed;
-            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
-            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 9  % Tian_input_conditions
-            if(isempty(Tian2019_input))
-                Tian2019_input = Tian_regression_parameters(my_title); %taken from CC Template
-            end
-            legend_location = legend_location_fixed;
-            auto_numbering_string = auto_numbering_string_fixed;
-            dQdV_conditions = dQdV_conditions_fixed;
-            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
-            mygraph_linewidth = mygraph_linewidth_fixed;
-            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
-            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 10  % legend_location
+    case 7  % legend_location
             if(isempty(legend_location))
                 legend_location = legend_location_fixed;
             end
-            
             auto_numbering_string = auto_numbering_string_fixed;
             dQdV_conditions = dQdV_conditions_fixed;
             print_loop_singleCELLS = print_loop_singleCELLS_fixed;
             mygraph_linewidth = mygraph_linewidth_fixed;
             mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 11  % auto_numbering
+    case 8  % auto_numbering_string
             if(isempty(auto_numbering_string))
                auto_numbering_string = auto_numbering_string_fixed;
             end
-
             dQdV_conditions = dQdV_conditions_fixed;
             print_loop_singleCELLS = print_loop_singleCELLS_fixed;
             mygraph_linewidth = mygraph_linewidth_fixed;
             mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 12
-
+    case 9  % dQdV_conditions
+            dQdV_conditions = dQdV_conditions_fixed;
             print_loop_singleCELLS = print_loop_singleCELLS_fixed;
             mygraph_linewidth = mygraph_linewidth_fixed;
             mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 13 
+    case 10  % print_loop_singleCELLS
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
             mygraph_linewidth = mygraph_linewidth_fixed;
             mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 14
+    case 11  % mygraph_linewidth
+            mygraph_linewidth = mygraph_linewidth_fixed;
             mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 15            
+    case 12 % mycv_voltagelimit_low
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 13 % mycv_voltagelimit_high
             mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
 end % input-handling
-
-%--------------------------------------------------------------------------
-% Decise if to re-IMPORT Data
-%--------------------------------------------------------------------------
-if(isequal(my_selection,my_selection_previous))
-    import_data = 0;
-else 
-    import_data = 1; 
-end
-
-my_selection_previous_assign = my_selection; % assign for export
 
 %--------------------------------------------------------------------------
 % Data Filepath and Details Access 
@@ -182,7 +138,7 @@ my_selection_previous_assign = my_selection; % assign for export
 %--------------------------------------------------------------------------
 % trigger_CoinCellAnalysis_PINBALL (input handling - for CoinCellAnalysis
 %--------------------------------------------------------------------------
-    [polarization,capacity_fade,eis_profile,additional_figure,cell_data] = trigger_CoinCellAnalysis_PinBALL(filepath_sample,mass_active,sample_diameter,plot_mode,cycles,import_data,CV_edge_limit,my_legend,my_title,legend_location,auto_numbering_string,my_color,Tian2019_input,dQdV_conditions,my_selection,print_loop_singleCELLS,sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high); % calls to function - which does all the input handling
+    [polarization,capacity_fade,eis_profile,additional_figure,cell_data] = trigger_CoinCellAnalysis_PinBALL(filepath_sample,mass_active,sample_diameter,plot_mode,cycles,CV_edge_limit,my_legend,my_title,legend_location,auto_numbering_string,my_color,dQdV_conditions,my_selection,print_loop_singleCELLS,sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high); % calls to function - which does all the input handling
 
 end % function - master
 

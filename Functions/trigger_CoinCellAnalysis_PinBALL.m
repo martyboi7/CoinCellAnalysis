@@ -11,7 +11,7 @@
 %--------------------------------------------------------------------------
 % Function
 %--------------------------------------------------------------------------
-function [polarization,capacity_fade,eis_profile,additional_figure,cell_data] = trigger_CoinCellAnalysis_PinBALL(filepath_sample,mass_active,sample_diameter,plot_mode,cycles,import_data,CV_edge_limit,my_legend,my_title,legend_location,auto_numbering_string,my_color,Tian2019_input,dQdV_conditions,my_selection,print_loop_singleCELLS,sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high)
+function [polarization,capacity_fade,eis_profile,additional_figure,cell_data] = trigger_CoinCellAnalysis_PinBALL(filepath_sample,mass_active,sample_diameter,plot_mode,cycles,CV_edge_limit,my_legend,my_title,legend_location,auto_numbering_string,my_color,dQdV_conditions,my_selection,print_loop_singleCELLS,sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high)
 
 disp('trigger_CoinCellAnalysis_PinBALL')
 
@@ -94,7 +94,7 @@ disp('--------------------- ')
                 case 1
                     
                     % trigger function
-                    [polarization,capacity_fade,eis_profile,additional_figure,cell_data] = coinCellAnalysis2(final_filepath_sample,final_mass_active,final_sample_diamter,plot_mode,cycles,import_data,CV_edge_limit,final_my_legend,my_title,legend_location,auto_numbering_string,final_my_color,Tian2019_input,dQdV_conditions,final_sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high);
+                    [polarization,capacity_fade,eis_profile,additional_figure,cell_data] = coinCellAnalysis2(final_filepath_sample,final_mass_active,final_sample_diamter,plot_mode,cycles,CV_edge_limit,final_my_legend,my_title,legend_location,auto_numbering_string,final_my_color,dQdV_conditions,final_sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high);
                     
                 %----------------------------------------------------------
                 % MULTICell (DEG or POL) 
@@ -102,7 +102,7 @@ disp('--------------------- ')
                 case {2,3} % Use END CYCLE for DEGRADATION
 
                     % trigger function
-                    [polarization,capacity_fade,eis_profile,additional_figure,cell_data] = coinCellAnalysis2(final_filepath_sample,final_mass_active,final_sample_diamter,plot_mode,cycles,import_data,CV_edge_limit,final_my_legend,my_title,legend_location,auto_numbering_string,final_my_color,Tian2019_input,dQdV_conditions,final_sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high);
+                    [polarization,capacity_fade,eis_profile,additional_figure,cell_data] = coinCellAnalysis2(final_filepath_sample,final_mass_active,final_sample_diamter,plot_mode,cycles,CV_edge_limit,final_my_legend,my_title,legend_location,auto_numbering_string,final_my_color,dQdV_conditions,final_sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high);
                     
                 %----------------------------------------------------------
                 otherwise %switch 1 - plot_mode_multi

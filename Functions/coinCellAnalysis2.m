@@ -19,7 +19,7 @@
 %--------------------------------------------------------------------------
 % Function 
 %--------------------------------------------------------------------------
-function [Polarization,capacity_fade,eis_profile,additional_figure,cell_data] = coinCellAnalysis2(filepath_sample,mass_active,sample_diameter,plot_mode,cycles,import_data,CV_edge_limit,my_legend,my_title,legend_location,auto_numbering_string,my_color,Tian2019_input,dQdV_conditions,sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high)
+function [Polarization,capacity_fade,eis_profile,additional_figure,cell_data] = coinCellAnalysis2(filepath_sample,mass_active,sample_diameter,plot_mode,cycles,CV_edge_limit,my_legend,my_title,legend_location,auto_numbering_string,my_color,dQdV_conditions,sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high)
 %--------------------------------------
 % Input Handling
 %--------------------------------------
@@ -28,14 +28,12 @@ function [Polarization,capacity_fade,eis_profile,additional_figure,cell_data] = 
 % sample_diameter,
 % plot_mode,
 % cycles,
-% import_data
 % CV_edge_limit
 % my_legend,
 % my_title,
 % legend_location,
 % auto_numbering_string,
 % my_color,
-Tian2019_input_fixed = Tian_regression_parameters(my_title);
 dQdV_conditions_fixed = {2e3,10};
 sample_per_CYCLE_EIS_fixed = [];
 mygraph_linewidth_fixed = 1;
@@ -43,35 +41,28 @@ mycv_voltagelimit_low_fixed = [];
 mycv_voltagelimit_high_fixed = [3.00];
 
 switch nargin
-    case {1,2,3,4,5,6,7,8,9,10,11,12}
+    case {1,2,3,4,5,6,7,8,9,10,11}
         disp('Error - coinCellAnalysis2: insufficient input parameters!')
         return
     case 13
-        Tian2019_input = Tian2019_input_fixed;
         dQdV_conditions = dQdV_conditions_fixed;
         sample_per_CYCLE_EIS = sample_per_CYCLE_EIS_fixed;
         mygraph_linewidth = mygraph_linewidth_fixed;
         mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
         mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
     case 14 
-        dQdV_conditions = dQdV_conditions_fixed;
         sample_per_CYCLE_EIS = sample_per_CYCLE_EIS_fixed;
         mygraph_linewidth = mygraph_linewidth_fixed;
         mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
         mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
     case 15        
-        sample_per_CYCLE_EIS = sample_per_CYCLE_EIS_fixed;
         mygraph_linewidth = mygraph_linewidth_fixed;
         mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
         mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
     case 16
-        mygraph_linewidth = mygraph_linewidth_fixed;  
         mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
         mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
     case 17
-        mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
-        mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
-    case 18
         mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
 end % switch - input handling (nargin)
 
@@ -97,7 +88,6 @@ end % switch - input handling (nargin)
 
     [row_raw_data,row_cycles,row_cycles_clean] = getmy_celldata_rows();
 
-if(import_data == 1)
     for i = 1:num_entries
         % RAW Data: Voltage(V),Time(s),Capacity(mAh/g),Current Density(mA/g), Halfcycle/Other,dQdV/EIS 
         [cell_data{row_raw_data,i},my_source(1,i)] = import_cell_data_cycle(filepath_sample(i),mass_active(i),sample_diameter(i),plot_mode); % developing 09/02/2023
@@ -118,12 +108,6 @@ if(import_data == 1)
     disp(strcat('       number of entries: ',num2str(num_entries)))
     disp('       -----------------------')
     %--------------------------------------
-else % assign old data
-    cell_data = cell_data_old;
-    my_source = my_source_old;
-
-end % import - data
-
 
 %     % test - for CV (the number fo halfcycles actually present)
 %     data_test = cell_data{1,1};
@@ -160,25 +144,6 @@ switch plot_mode_multi %  switch 1 - plot_mode (master)
          eis_profile = 0; % makes empty dummy fig. 
          additional_figure = 0; % makes empty dummy fig. 
          [capacity_fade,cell_data] = my_capacity_fade(plot_mode,cell_data,num_entries,my_source,cycles,my_color,my_title,my_legend,filepath_sample,auto_numbering_string,legend_location);
-
-     % ** MOVE Into FRAMEWORK
-%     %--------------------------------------
-%     case{12} %Tian2019b style regression
-%     %--------------------------------------
-%         
-%         Polarization = 0; % makes empty dummy fig.
-%         discharge_capacity = getmeadischarge(mydata_trimmed,cycles,my_color(1,:),plot_mode);
-%         
-%          % Current density at beginning and end of cycle are 0. Cannot
-%          % use those. Use the max value to overcome (as high A/g tests have
-%          % many zero values and median cannot combat this.
-%             for f = 1:length(mydata_trimmed)
-%                 intermediate_var = mydata_trimmed{1,f};
-%                 current_density_cycle(f,1) = mean(nonzeros(abs(intermediate_var(:,3))));
-%             end 
-%         
-%         %Tian2019b Model fig
-%         capacity_fade = cycling_data_processing(Tian2019_input,current_density_cycle(1:2:end),discharge_capacity);
     %--------------------------------------
     otherwise %switch 1 - plot_mode
     %--------------------------------------
