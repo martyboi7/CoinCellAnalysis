@@ -10,74 +10,199 @@
 %--------------------------------------------------------------------------
 % Input Handling
 %--------------------------------------------------------------------------
-function [polarization,capacity_fade,cell_data]=trigger_coinCellAnalysis(filepath_sample,mass_active,plot_mode,my_selection,cycles,my_color,my_title,my_legend,Tian2019_input,legend_location,auto_numbering_string,dQdV_conditions)
-% Input Handling - to be completed
+function [polarization,capacity_fade,eis_profile,additional_figure,cell_data,my_selection_previous_assign]=trigger_coinCellAnalysis(plot_mode,pc_choice,data_choice,my_selection,my_selection_previous,cycles,CV_edge_limit,my_title,Tian2019_input,legend_location,auto_numbering_string,dQdV_conditions,print_loop_singleCELLS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high)
+
+disp('-------------------------')
+disp('trigger_coinCellAnalysis')
+disp('-------------------------')
+
+% Insert FIXED Values for Input Handling
+my_selection_fixed = [];
+my_selection_previous_fixed = [];
+cycles_fixed = [];
+CV_edge_limit_fixed = 0;
+my_title_fixed = "My Cells ";
+Tian2019_input_fixed = Tian_regression_parameters(my_title); %taken from CC Template
+legend_location_fixed = 'Northeast';
+auto_numbering_string_fixed = 'Cycle ';
+dQdV_conditions_fixed = {2e3,10}; %taken from CC Template
+print_loop_singleCELLS_fixed = false;
+mygraph_linewidth_fixed = 1;
+mycv_voltagelimit_low_fixed = [];
+mycv_voltagelimit_high_fixed = [3.00];
+
+% Input Handling - needs to be updated (06/07/2022)
 switch nargin
-    case{0,1,2,3,4,5,6,7}
-        my_legend = {};
-        legend_location = 'Northeast';
-        auto_numbering_string = 'Run ';
-        dQdV_conditions = {true,[4,23]};
-    case 8
-            % For now fixing something empty
-            if(isempty(my_legend))
-                my_legend = {};
+    case{0,1,2} % NO: plot_mode, pc_choice, data_choice - return
+        
+        disp('Error - trigger_coinCellAnalysis: NO plot_mode, pc_choice, OR data_choice SELECTED')
+        return
+        
+    case 3  % Key components selected: plot_mode, pc_choice, data_choice
+            my_selection = my_selection_fixed;
+            my_selection_previous = my_selection_previous_fixed;
+            cycles = cycles_fixed;
+            CV_edge_limit = CV_edge_limit_fixed;
+            my_title = my_title_fixed;
+            Tian2019_input = Tian2019_input_fixed;
+            legend_location = legend_location_fixed;
+            auto_numbering_string = auto_numbering_string_fixed;
+            dQdV_conditions = dQdV_conditions_fixed;
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 4  % my_selection            
+            my_selection_previous = my_selection_previous_fixed;
+            cycles = cycles_fixed;
+            CV_edge_limit = CV_edge_limit_fixed;
+            my_title = my_title_fixed;
+            Tian2019_input = Tian2019_input_fixed;
+            legend_location = legend_location_fixed;
+            auto_numbering_string = auto_numbering_string_fixed;
+            dQdV_conditions = dQdV_conditions_fixed;
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 5  % my_selection_previous
+            cycles = cycles_fixed;
+            CV_edge_limit = CV_edge_limit_fixed;
+            my_title = my_title_fixed;
+            Tian2019_input = Tian2019_input_fixed;
+            legend_location = legend_location_fixed;
+            auto_numbering_string = auto_numbering_string_fixed;
+            dQdV_conditions = dQdV_conditions_fixed;
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 6  % cycles
+            CV_edge_limit = CV_edge_limit_fixed;
+            my_title = my_title_fixed;
+            Tian2019_input = Tian2019_input_fixed;
+            legend_location = legend_location_fixed;
+            auto_numbering_string = auto_numbering_string_fixed;
+            dQdV_conditions = dQdV_conditions_fixed;
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 7  % CV_edge_limit
+            my_title = my_title_fixed;
+            Tian2019_input = Tian2019_input_fixed;
+            legend_location = legend_location_fixed;
+            auto_numbering_string = auto_numbering_string_fixed;
+            dQdV_conditions = dQdV_conditions_fixed;
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 8  % my_title
+            Tian2019_input = Tian2019_input_fixed;
+            legend_location = legend_location_fixed;
+            auto_numbering_string = auto_numbering_string_fixed;
+            dQdV_conditions = dQdV_conditions_fixed;
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 9  % Tian_input_conditions
+            if(isempty(Tian2019_input))
+                Tian2019_input = Tian_regression_parameters(my_title); %taken from CC Template
             end
-            legend_location = 'Northeast';
-            auto_numbering_string = 'Run ';
-            dQdV_conditions = {true,[4,23]};
-    case 9
-            legend_location = 'Northeast';
-            auto_numbering_string = 'Run ';
-            dQdV_conditions = {true,[4,23]};
-    case 10
+            legend_location = legend_location_fixed;
+            auto_numbering_string = auto_numbering_string_fixed;
+            dQdV_conditions = dQdV_conditions_fixed;
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 10  % legend_location
             if(isempty(legend_location))
-                legend_location = 'Northeast';
+                legend_location = legend_location_fixed;
             end
-            auto_numbering_string = 'Run ';
-            dQdV_conditions = {true,[4,23]};
-    case 11
+            
+            auto_numbering_string = auto_numbering_string_fixed;
+            dQdV_conditions = dQdV_conditions_fixed;
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 11  % auto_numbering
             if(isempty(auto_numbering_string))
-               auto_numbering_string = 'Run ';    % what to call the entries on the graph if no legend entry provided
+               auto_numbering_string = auto_numbering_string_fixed;
             end
-            dQdV_conditions = {true,[4,23]};
+
+            dQdV_conditions = dQdV_conditions_fixed;
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 12
+
+            print_loop_singleCELLS = print_loop_singleCELLS_fixed;
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 13 
+            mygraph_linewidth = mygraph_linewidth_fixed;
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 14
+            mycv_voltagelimit_low = mycv_voltagelimit_low_fixed;
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+    case 15            
+            mycv_voltagelimit_high = mycv_voltagelimit_high_fixed;
+end % input-handling
+
+%--------------------------------------------------------------------------
+% Decise if to re-IMPORT Data
+%--------------------------------------------------------------------------
+if(isequal(my_selection,my_selection_previous))
+    import_data = 0;
+else 
+    import_data = 1; 
 end
 
-% switch to make sure that plot_mode is active
-switch plot_mode % switch 1
-        case {1,2,3,4,5,6,7,8,9,10,11,12,13}
-            % Call to the OG Function
-        if(isempty(my_selection)) 
-            % plots everything - no initial selection made
-            [polarization,capacity_fade,cell_data] = coinCellAnalysis2(filepath_sample,mass_active,plot_mode,cycles,my_legend,my_title,legend_location,auto_numbering_string,my_color);
-        elseif(length(my_selection) > length(my_color))
-            % not enough colours provided - auto assigns colours
-            [polarization,capacity_fade,cell_data] = coinCellAnalysis2(filepath_sample(my_selection),mass_active(my_selection),plot_mode,cycles,my_legend(my_selection),my_title,legend_location,auto_numbering_string,my_color);
-        elseif(plot_mode < 6)
-            % SINGLE CELLS
-            [polarization,capacity_fade,cell_data] = coinCellAnalysis2(filepath_sample(my_selection(1)),mass_active(my_selection(1)),plot_mode,cycles,my_legend(my_selection(1)),my_title,legend_location,auto_numbering_string,my_color);
-        elseif(plot_mode == 13)
-            % dQ/dV
-            [polarization,capacity_fade,cell_data] = coinCellAnalysis2(filepath_sample(my_selection(1)),mass_active(my_selection(1)),plot_mode,cycles,my_legend(my_selection(1)),my_title,legend_location,auto_numbering_string,my_color,1,dQdV_conditions);
-        elseif(isempty(my_legend) || length(my_selection) > length(my_legend))
-            % MULTI-CELLS
-            % Legend issues - empty legend OR selection includes more numbers than available in legend
-            [polarization,capacity_fade,cell_data] = coinCellAnalysis2(filepath_sample(my_selection),mass_active(my_selection),plot_mode,cycles,my_legend,my_title,legend_location,auto_numbering_string,my_color(my_selection,:));
-        elseif(length(my_selection) == length(my_color))
-            % MULTI-CELLS
-            % Pre-set colours (same as the section below otherwise -> else)
-            [polarization,capacity_fade,cell_data] = coinCellAnalysis2(filepath_sample(my_selection),mass_active(my_selection),plot_mode,cycles(1),my_legend(my_selection),my_title,legend_location,auto_numbering_string,my_color,Tian2019_input);
-        else
-            % MULTI-CELLS
-            % Base Run - if all selections made properly runs body of functions
-            [polarization,capacity_fade,cell_data] = coinCellAnalysis2(filepath_sample(my_selection),mass_active(my_selection),plot_mode,cycles(1),my_legend(my_selection),my_title,legend_location,auto_numbering_string,my_color(my_selection,:),Tian2019_input);
-        end
-    otherwise %switch 1
-        disp('Error! plot_mode: Option not available. trigger_coinCellAnalysis.mat Line 64');
-        polarization = false;
-        capacity_fade = false; 
-        cell_data = 1;
-        return
-end % switch 1
+my_selection_previous_assign = my_selection; % assign for export
+
+%--------------------------------------------------------------------------
+% Data Filepath and Details Access 
+%--------------------------------------------------------------------------
+        switch pc_choice
+        % Gaming PC or UCL Laptop
+            case {1,2} 
+                [filepath_sample,mass_active,sample_diameter,sample_per_CYCLE_EIS,my_color,my_legend] = switch_mydatachoice(data_choice,pc_choice);
+            otherwise
+                disp('Error - trigger_coinCellAnalysis.m: this pc_choice is not supported')
+                return
+        end % Switch choices 
+
+%--------------------------------------------------------------------------
+% trigger_CoinCellAnalysis_PINBALL (input handling - for CoinCellAnalysis
+%--------------------------------------------------------------------------
+    [polarization,capacity_fade,eis_profile,additional_figure,cell_data] = trigger_CoinCellAnalysis_PinBALL(filepath_sample,mass_active,sample_diameter,plot_mode,cycles,import_data,CV_edge_limit,my_legend,my_title,legend_location,auto_numbering_string,my_color,Tian2019_input,dQdV_conditions,my_selection,print_loop_singleCELLS,sample_per_CYCLE_EIS,mygraph_linewidth,mycv_voltagelimit_low,mycv_voltagelimit_high); % calls to function - which does all the input handling
+
+end % function - master
+
+% Function for the switch statment for the data choice (picks where to draw
+% data from - CC, EX or CV)
+function [filepath_sample,mass_active,sample_diameter,sample_per_CYCLE_EIS,my_color,my_legend] = switch_mydatachoice(data_choice,data_location)
+
+    switch data_choice
+            case 1 % CC - CC1-9, R1-4, HR1
+                [filepath_sample,mass_active,sample_diameter,sample_per_CYCLE_EIS,my_color,my_legend] = Cell_Details_20210914(data_location);
+            case 4 % CC10 - QMU 
+                [filepath_sample,mass_active,sample_diameter,sample_per_CYCLE_EIS,my_color,my_legend] = Cell_Details_CC_20231027(data_location);   
+            case 5 % EIS
+                [filepath_sample,mass_active,sample_diameter,sample_per_CYCLE_EIS,my_color,my_legend] = Cell_Details_EIS_20220930(data_location); % developing
+            case 2 % EX-Series 
+                [filepath_sample,mass_active,sample_diameter,sample_per_CYCLE_EIS,my_color,my_legend] = Cell_Details_Exsitu_231009(data_location);
+            case 3 % CV
+                [filepath_sample,mass_active,sample_diameter,sample_per_CYCLE_EIS,my_color,my_legend] = Cell_Details_CV_20220303(data_location);
+            otherwise 
+                disp('Error - trigger_coinCellAnalysis: No such choice for data_choice. Try CC (1), EX (2), or CV (3)')
+   end 
 
 end

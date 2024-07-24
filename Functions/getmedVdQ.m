@@ -19,6 +19,15 @@ function [thedataexportdQdV,my_newlegend] = getmedVdQ(mydata,cycles,oddeven,dQdV
 smoothme = dQdV_conditions{1}; 
 cond = dQdV_conditions{2};
 
+
+% INPUT Handling
+if(max(cycles)>length(mydata))
+    disp('Error - getmedVdQ: Cycle set outside of file bounds. Select smaller selection of cycles.')
+    thedataexportdQdV = 0;
+    my_newlegend = 0;
+    return
+end
+
 % If selection of cycles e.g [1,2,4,5] or [1:5]
         k = 1; %dummy variable
         for i = cycles

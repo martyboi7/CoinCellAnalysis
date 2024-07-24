@@ -7,127 +7,107 @@
 
 % Note:     
 
-function charge_capacity = getmeacharge(data,cycles,data_colors,plot_mode)
+function charge_capacity = getmeacharge(data,cycles_input,data_colors,mygraph_linewidth,plot_mode)
+
+% INPUT Handling 
+    if nargin < 5 % not plot_mode provided
+        plot_mode = 2; % guarantees print of fig. 
+    end
+
+[~,plot_mode_code,~] = switch_plot_mode(plot_mode); %new plot_mode function
+plot_mode_code_CC = getplot_mode_code_CC(); % CC Data types 
+
+    % Charge CYCLE - 13/12/2022
+    [data_charge,cycles_charge_length,~] = cellarray_emptycheck(data(1,:));
+    % use function to get non-empty data for charge
+
+    % Discharge CYCLE - 13/12/2022
+    [data_discharge,cycles_discharge_length,~] = cellarray_emptycheck(data(2,:));
+    % use function to get non-empty data for discharge 
 
 % Basic checks
 % 1. If did not specific cycles makes sure you can print cycles (half of
 % the data set because data is discharge - charge)
-if nargin < 2
-    cycles = length(data)/2;
-    plot_mode = 2; %this means nothing here - just not equal 7 (see pt. 3)
-elseif nargin < 4
-    plot_mode = 3; %this means nothing here - just not equal 7 (see pt. 3)
-end
+    if nargin < 2
+        cycles = cycles_charge_length;
+    else
+        cycles = cycles_input; % assign input cycles 
+    end 
 
-% 2. If you did specify cycles, but told it to print too many, it corrects
-% you. 
-if (2*max(cycles) > length(data) && 2*min(cycles) ~= 2)
-    disp('There are less cycles in your dataset that you have requested to print!')
-    cycles = round(length(data)/2) - 1;
-end
+% 2. If you did specify cycles, but told it to print too many, it corrects you. 
+    if (max(cycles) > cycles_charge_length && min(cycles) ~= 1)
+    %----------------------------------------------- 19/01/2023
+        switch plot_mode_code
+                case {14} % CV - have empty cells []
+                    clear data_charge cycles_charge_length % need to reassign 
 
-
-% 3. FOR FORMATION CHARGE COMPARISON ONLY - plot mode 7
-% plot_mode == 7 and only one cycle is specified 
-if(plot_mode == 7 && length(cycles) == 1)
-    
-    evencolumns = 2:2:length(data);
-    evendata = data(1,evencolumns); %get all the discharge datasets
-    thedata = evendata{1,cycles};
-    
-    charge = thedata(:,2);   % current (mAh)
-    
-    index_zero = find(nonzeros(charge));
-        if(~isempty(index_zero))
-            new_discharge = charge(index_zero);
-
-            voltage = thedata(index_zero,1); % voltage (V)
-
-            plot(new_discharge,voltage,'color',data_colors(1,:))
-            hold on
-
-            final_actual_value = nonzeros(new_discharge);
-
-            charge_capacity(cycles,:) = [cycles,final_actual_value(end)];
-        else
-           disp('Empty cycle')
-           charge_capacity(1,:) = NaN;
-        end 
-
-% -------------------------------------------------------------------------
-% 4. If number of cycles e.g [5]
-elseif(length(cycles) == 1)
-    for i = 2:2:2*cycles
-    
-    k = i/2;    % dummy variable to get the correct cycle    
-        
-    thedata = data{1,i}; %get all the discharge datasets
-    
-    charge = thedata(:,2);   % current (mAh)
-    
-    index_zero = find(nonzeros(charge));
-        
-        if(~isempty(index_zero))
-
-            new_charge = charge(index_zero);
-
-            voltage = thedata(index_zero,1); % voltage (V)
-
-            if nargin < 3
-                plot(new_charge,voltage,'--')
-                hold on
-            elseif nargin == 3 
-                plot(new_charge,voltage,'--','color',data_colors(k,:))
-                hold on
-            end
-
-            final_actual_value = nonzeros(new_charge);
-
-            charge_capacity(k,:) = [k,final_actual_value(end)];
-            
-        else
-           disp('Empty cycle')
-           charge_capacity(k,:) = NaN;
-        end
+                    data_charge = data(1,:);
+                otherwise
+                    disp('Error: getmeacharge - There are less cycles in your dataset that you have requested to print!')
+                    cycles = cycles_charge_length;
+        end % switch - plot_mode_code
+    elseif(max(cycles) > cycles_charge_length) % if there were uncompleted cycles [] in CC data
+        cycles = cycles_charge_length;
+    %----------------------------------------------- 19/01/2023
     end
-    
-%  ------------------------------------------------------------------------    
-% 5. If selection of cycles e.g [1,2,4,5] or [1:5]
-elseif(length(cycles) > 1)
-    for i = cycles
-    
-    evencolumns = 2:2:length(data);
-    evendata = data(1,evencolumns); %get all the discharge datasets
-    thedata = evendata{1,i};
-    
-    charge = thedata(:,2);   % current (mAh)
-    
-    index_zero = find(nonzeros(charge));
-    
-        if(~isempty(index_zero))
 
-            new_charge = charge(index_zero);
+% Data Labelling - ignoring special cases up above
+    [column_voltage,~,column_capacity,column_current_density,~,~,~,~] = getmy_celldata_columns(1); % for first 4 column - choice of CYCLER does not matter 
 
-            voltage = thedata(index_zero,1); % voltage (V)
+%------------------------------------------------------------------
+% Unified Code Approach
+%------------------------------------------------------------------
 
-            k = find(i == cycles);  % dummy variable for color scheme
+switch plot_mode_code
+    case plot_mode_code_CC
+        switch plot_mode % some of the special plot_modes are getting repetitive - would be good to have a specific subfunction for each!
+            case 48 % TIME CYCLE comparison for single CELL
+                    % Developed 23/03/2023
+        
+                    if(length(cycles) == 1) % for all the cycles up to the value provide (e.g. [5] -> 1,2,3,4,5)
+                        i_unified = 1:cycles; 
+                    elseif(length(cycles) > 1) % for the cycle selection provided (e.g. [1,2,4,5] or [1:5])
+                        i_unified = cycles; 
+                    end % if statement
+        
+                    for o = i_unified % cycles selected in CELL dataset
+        
+                        % DISCHARGE
+                        discharge_cycle = data_discharge{1,o};
+                        discharge_previous_time = discharge_cycle(end,2)/3600;
+        
+                        % CHARGE
+                        charge_cycle = data_charge{1,o};  
+                        charge_capacity(o,1) = charge_cycle(end,2)/3600 - discharge_previous_time; % converted from s to hr 
+        
+                        clear discharge_cycle charge_cycle
+                    end % for loop - TIME
+            case 49 % TIME - per whole CYCLE for MULTICELL
+                    if(length(cycles) == 1) % for all the cycles up to the value provide (e.g. [5] -> 1,2,3,4,5)
+                        i_unified = 1:cycles; 
+                    elseif(length(cycles) > 1) % for the cycle selection provided (e.g. [1,2,4,5] or [1:5])
+                        i_unified = cycles; 
+                    end % if statement
+                    for o = i_unified % cycles selected in CELL dataset
+        
+                        % CHARGE
+                        charge_cycle = data_charge{1,o};  
+                        charge_capacity(o,1) = charge_cycle(end,2)/3600; % converted from s to hr 
+        
+                        clear charge_cycle
+                    end % for loop - TIME
+        
+            otherwise 
+                
+                if(cycles == 0)
+                    charge_capacity = nan; % empty (nor charge cycle)
+                else
+                    charge_capacity = getmeacharge_capacity(data_charge,cycles_input,data_colors,mygraph_linewidth,plot_mode);        
+                end % if-statement
+        end % switch - plot_mode 
+    otherwise % plot_mode_code
+        
+        charge_capacity = nan; % empty 
 
-            if nargin < 3
-                plot(new_charge,voltage,'--')
-                hold on
-            elseif nargin == 3 
-                plot(new_charge,voltage,'--','color',data_colors(k,:))
-                hold on
-            end
-
-            final_actual_value = nonzeros(new_charge);
-
-            charge_capacity(i,:) = [i,final_actual_value(end)];
-
-        else
-            disp('Empty cycle')
-            charge_capacity(k,:) = NaN;
-        end
-    end
-end
-end
+end % switch - plot_mode_code       
+end % function - master 

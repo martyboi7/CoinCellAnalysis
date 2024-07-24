@@ -8,9 +8,10 @@
 % Note:   
 %                               color to check, number of inputs
 function my_color = getmecolor(color_input,num_entries)
+
     if (isempty(color_input))
         % No color was assigned 
-        my_color = rand(length(filepath_sample),3); %setting the color scheme - can be changed to fixed ones 
+        my_color = rand(num_entries,3); %setting the color scheme - can be changed to fixed ones 
 
     elseif(length(color_input) < num_entries)
         % some colors specified
@@ -20,3 +21,4 @@ function my_color = getmecolor(color_input,num_entries)
     else 
         my_color = color_input;
     end
+end 
